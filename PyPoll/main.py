@@ -1,66 +1,58 @@
-import csv
 import os
+import csv
 
-#Load files
-csvpath = r"C:\Users\megan.moroney\Desktop\python-challenge\PyPoll\Resources\Election_data.csv"
+poll_csv = r"C:\Users\megan.moroney\Desktop\python-challenge\PyPoll\Resources\Election_data.csv"
 
-votes = 0
-winvotes = 0
-total_candidates = 0
-mostvotes = ["", o]
-candidate_choices = []
-candidatevotes = {}
+def results(data):
 
+    totalvotes = 0
+    votes = []
+    candidates = []
+    uniquecandidates = []
+    percent = []
+     
+    for row in data:
 
-#read the data
-with open(csvpath) as election_data:
-    reader = csv.DictReader(election_data)
+        totalvotes += 1
 
-#Create loop to do work within to find the finish products
-    for row in reader:
-        votes = votes + 1
-        total_candidates = row["Candidate"]
+        if row[2] not in uniquecandidates:
+            uniquecandidates.append(row[2])
 
-        if row["Candiate not in candiate_choices"]:
-            candidate_choices.append(row["Candidate"])
-            candidatevotes[row["Candidate"]] = 1
+        votes.append(row[2])
 
-        else:
-            candidatevotes[row["Candidate"]] = candidatevotes[row["Candidate"]] + 1
+    for candidate in uniquecandidates:
+        candidates.append(votes.count(candidate))
+        percent.append(round(votes.count(candidate)/totalvotes*100,3))
 
-
-    print()
-    print()
-    print()
-    print("Election Results")
-    print("-------------------------")
-    print("Total Votes " + str(votes))
-    print("-------------------------")
-
-    for candidate in candidatevotes:
-        print(candidate + " " + str(round(((candidatevotes[candidate]/votes)*100))) + "%" + " (" + str(candidatevotes[candidate]) + ")") 
-        candidateresults = (candidate + " " + str(round(((candidate_votes[candidate]/votes)*100))) + "%" + " (" + str(candidatevotes[candidate]) + ")") 
+    winner = uniquecandidates[candidates.index(max(candidates))]
     
-candidatevotes
+    print('Election Results')
+    print('--------------------------------')
+    print(f'Total Votes: {totalvotes}')
+    print('--------------------------------')
+    for i in range(len(uniquecandidates)):
+        print(f'{uniquecandidates[i]}: {percent[i]}% {candidates[i]}')
+    print('--------------------------------')
+    print(f'Winner: {winner}')
+    print('--------------------------------')
 
-winner = sorted(candidatevotes.items(), key=itemgetter(1), reverse=True)
+    output = os.path.join("PyPollResults.txt")
+
+    with open(output, "w") as txtfile:
+        txtfile.write('Election Results')
+        txtfile.write('\n------------------------------------')
+        txtfile.write(f'\nTotal Votes: {totalvotes}')
+        txtfile.write('\n------------------------------------')
+        for i in range (len(uniquecandidates)):
+            txtfile.write(f'\n{uniquecandidates[i]}: {percent[i]}% {candidates[i]}')
+        txtfile.write('\n------------------------------------')
+        txtfile.write(f'\nWinner: {winner}')
+        txtfile.write('\n------------------------------------')
 
 
-print("-------------------------")
-print("Winner: " + str(winner[0]))
-print("-------------------------")
+with open(poll_csv, newline='') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=',')
 
-
-
-
-
-# Output Files
-with open(ElectionAnalysis, "w") as txt_file:
+    csv_header = next(csvfile)
     
-    txt_file.write("Election Results")
-    txt_file.write("\n-------------------------")
-    #txt_file.write(candidate + " " + str(round(((candidate_votes[candidate]/votes)*100))) + "%" + " (" + str(candidate_votes[candidate]) + ")")
-    txt_file.write(str(winner))
-    txt_file.write("\n-------------------------")
-    txt_file.write("Winner: " + str(winner[0]))
-    txt_file.write("\nTotal Votes " + str(votes))
+    results(csvreader)
